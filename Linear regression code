@@ -1,0 +1,50 @@
+players_data <- read_csv('data/players.csv')
+players_data
+
+player_new <- players_data |> 
+select(experience, played_hours, age, gender) |> 
+as_tibble ()
+player_new
+
+play_split <- initial_split(player_new, prop = 0.75, strata = played_hours)
+play_split
+play_training <- training(play_split) 
+play_training 
+play_testing <- testing(play_split) 
+play_testing 
+
+
+lm_spec <- linear_reg() |> 
+set_engine("lm") |> 
+set_mode("regression")
+lm_spec
+
+
+play_recipe <- recipe(played_hours ~ age + gender + experience, data = play_training) 
+play_recipe
+
+
+play_fit <- workflow() |> 
+add_recipe(play_recipe) |>
+add_model(lm_spec) |>
+fit(play_training)
+play_fit
+
+
+lm_rmse <- play_fit |>
+         predict(play_training) |>
+         bind_cols(play_training) |>
+         metrics(truth = played_hours, estimate = .pred) |>
+         filter(.metric == "rmse") |>
+         select(.estimate) |>
+         pull()
+lm_rmse
+
+lm_rmspe <- play_fit |>
+         predict(play_testing) |>
+         bind_cols(play_testing) |>
+         metrics(truth = played_hours, estimate = .pred) |>
+         filter(.metric == "rmse") |>
+         select(.estimate) |>
+         pull()
+lm_rmspe
