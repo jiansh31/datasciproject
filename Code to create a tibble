@@ -1,0 +1,4 @@
+player_new <- players_data |> 
+select(experience, played_hours, age) |> 
+as_tibble ()
+player_new
