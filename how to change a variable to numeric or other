@@ -1,0 +1,3 @@
+player_end <- dataframe_name |> 
+mutate(variable = as.numeric(variable)) 
+player_end
